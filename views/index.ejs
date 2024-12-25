@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-gradient);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+        }
+
+        /* Upload Form Styling */
+        form {
+            max-width: 500px;
+            margin: 0 auto 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Gallery Styling */
+        h2 {
+            text-align: center;
+            color: var(--text-color);
+            margin: 40px 0 20px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .image {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .image:hover {
+            transform: translateY(-5px);
+        }
+
+        .image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .image p {
+            margin: 5px 0;
+            color: var(--text-color);
+        }
+
+        .image p:first-of-type {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        .image-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .delete-btn {
+            background: var(--delete-btn);
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: var(--delete-btn-hover);
+        }
+
+        .timestamp {
+            font-size: 0.85em;
+            color: var(--timestamp-color);
+            font-style: italic;
+        }
+
+        /* Preview Image Styling */
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+            object-fit: contain;
+            border: 2px solid #ddd;
+        }
+
+        .preview-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-message {
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        .logout-btn {
+            background: var(--delete-btn);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--delete-btn-hover);
+        }
+
+        /* Move your existing h1 styles here if needed */
+        h1 {
+            margin: 0;
+        }
+
+        .image-item a {
+            display: block;
+            cursor: pointer;
+        }
+
+        .image-item a:hover img {
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Theme Switch Button */
+        .theme-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: var(--primary-color);
+            color: white;
+            width: auto;
+        }
+
+        .theme-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .theme-icon {
+            font-size: 16px;
+        }
+
+        /* Theme Variables */
+        :root {
+            /* Blue Theme (Default) */
+            --primary-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --text-color: #2c3e50;
+            --form-border: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --delete-btn: #e74c3c;
+            --delete-btn-hover: #c0392b;
+            --timestamp-color: #95a5a6;
+        }
+
+        :root[data-theme="pink"] {
+            /* Pink Theme */
+            --primary-gradient: linear-gradient(135deg, #fff0f6 0%, #ffe3ec 100%);
+            --primary-color: #f06595;
+            --primary-dark: #d6336c;
+            --text-color: #d6336c;
+            --form-border: #fcc2d7;
+            --shadow-color: rgba(214, 51, 108, 0.1);
+            --delete-btn: #ff8787;
+            --delete-btn-hover: #fa5252;
+            --timestamp-color: #f783ac;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .date-section {
+            margin-bottom: 40px;
+        }
+
+        .date-header {
+            color: var(--text-color);
+            padding: 10px 20px;
+            margin: 20px 0 10px 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        .gallery-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .image {
+            flex: 0 0 300px; /* Fixed width for each image container */
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        /* Update timestamp to show only time */
+        .timestamp {
+            font-size: 0.85em;
+            color: var(--timestamp-color);
+            font-style: italic;
+        }
+
+        /* Ensure consistent spacing */
+        .image-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📸 Feb 23rd Gallery app</h1>
+        <div class="user-menu">
+            <button id="themeToggle" class="theme-btn">
+                <span class="theme-icon">🎨</span>
+                Switch Theme
+            </button>
+            <span class="welcome-message">Hi, <%= name %> 👋</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required id="imageInput" onchange="previewImage(this)">
+        <div class="preview-container">
+            <img id="imagePreview" src="#" alt="Preview">
+        </div>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+
+    <h2>Gallery</h2>
+
+    <% 
+    // Group images by date
+    const groupedImages = {};
+    images.forEach(image => {
+        const date = new Date(image.createdAt).toLocaleDateString();
+        if (!groupedImages[date]) {
+            groupedImages[date] = [];
+        }
+        groupedImages[date].push(image);
+    });
+    %>
+
+    <% Object.keys(groupedImages).forEach(date => { %>
+        <div class="date-section">
+            <h3 class="date-header"><%= date %></h3>
+            <div class="gallery-row">
+                <% groupedImages[date].forEach(image => { %>
+                    <div class="image" data-id="<%= image._id %>">
+                        <img src="data:<%= image.img.contentType %>;base64,<%= image.img.data.toString('base64') %>" 
+                             alt="Gallery image"
+                             onclick="showModal(this.src)">
+                        <div class="image-actions">
+                            <span class="timestamp">
+                                <%= new Date(image.createdAt).toLocaleTimeString() %>
+                            </span>
+                            <button onclick="deleteImage('<%= image._id %>')" class="delete-btn">Delete</button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    <% }); %>
+
+    <script>
+        function deleteImage(imageId) {
+            if (!imageId) {
+                console.error('No image ID provided');
+                return;
+            }
+
+            if (confirm('Are you sure you want to delete this image?')) {
+                console.log('Attempting to delete image:', imageId); // Debug log
+                
+                fetch(`/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Delete successful:', data); // Debug log
+                    const imageElement = document.querySelector(`.image[data-id="${imageId}"]`);
+                    if (imageElement) {
+                        imageElement.remove();
+                    }
+                })
+                .catch(error => {
+                    console.error('Delete error:', error);
+                    alert('Failed to delete image');
+                });
+            }
+        
+        }
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+            
+            // Get theme with fallback values
+            const serverTheme = '<%= locals.theme || "blue" %>';
+            const savedTheme = serverTheme || localStorage.getItem('theme') || 'blue';
+            
+            // Apply theme
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            localStorage.setItem('theme', savedTheme);
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'pink' ? 'blue' : 'pink';
+                
+                // Update theme
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update server-side preference
+                fetch('/update-theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ theme: newTheme })
+                });
+                
+                // Update button text
+                themeToggle.innerHTML = `
+                    <span class="theme-icon">🎨</span>
+                    
+                `;
+            });
+            
+            // Set initial button text
+            themeToggle.innerHTML = `
+                <span class="theme-icon">🎨</span>
+                
+            `;
+        });
+    </script>
+
+    <div class="modal-overlay" id="imageModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img id="modalImage" src="" alt="Enlarged image">
+        </div>
+    </div>
+
+    <script>
+        // Move the modal functions here, before they're used
+        function showModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+        }
+
+        // Close modal when clicking the close button
+        document.querySelector('.close-btn').onclick = function() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('imageModal').onclick = function(event) {
+            if (event.target === this) {
+                this.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

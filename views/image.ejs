@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Details</title>
+    <style>
+        .image-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .image-details {
+            margin-top: 20px;
+        }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <div class="image-container">
+        <img src="data:image/<%= image.img.contentType %>;base64,<%= image.img.data.toString('base64') %>" alt="<%= image.name %>">
+        <div class="image-details">
+            <h2><%= image.name %></h2>
+            <p><%= image.desc %></p>
+        </div>
+        <a href="/" class="back-button">Back to Gallery</a>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,25 @@
+<!-- Find where you display messages and update the image element -->
+<% messages.forEach(function(message) { %>
+    <div class="message <%= message.username === username ? 'sent' : 'received' %>">
+        <!-- ... other message content ... -->
+        <% if (message.type === 'image') { %>
+            <img src="<%= message.content %>" alt="Chat Image" class="chat-image">
+        <% } %>
+        <!-- ... other message content ... -->
+    </div>
+<% }); %>
+
+<!-- Add this at the end of the body -->
+<div class="modal-overlay" id="imageModal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <img id="modalImage" src="" alt="Enlarged image">
+        <button class="download-btn" id="downloadBtn">Download Image</button>
+    </div>
+</div>
+
+<!-- Make sure your existing script tags are after the modal HTML -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>
+</body>
+</html>
